@@ -117,7 +117,7 @@ contract LibraryManagament is Destructible {
      * @dev - function to remove a book
      * @param isbn - the book's isbn
      */
-    function removeBook(uint isbn) public onlyOwner isBookActive(isbn) {
+    function removeBook(uint isbn) public onlyOwner isBookActive(isbn) isBookAvailable(isbn) {
         bookDetails[isbn].active = false;
     }
     
