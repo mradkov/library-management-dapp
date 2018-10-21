@@ -36,31 +36,31 @@ contract LibraryManagament is Destructible {
 
     /** MODIFIERS */
     modifier isBookActive(uint isbn) {
-        require(bookDetails[isbn].active == true);
+        require(bookDetails[isbn].active == true, "The required book is not active");
         _;
     }
 
     modifier isBookAvailable(uint isbn) {
-        require(bookDetails[isbn].rentedBy == 0x0);
+        require(bookDetails[isbn].rentedBy == 0x0, "The book is already rented");
         _;
     }
 
     modifier collectBookPayment(uint isbn) {
-        require(msg.value >= bookDetails[isbn].price);
+        require(msg.value >= bookDetails[isbn].price, "");
         _;
     }
 
     modifier isUserRegistered() {
-        require(usersList[msg.sender].registered == false);
+        require(usersList[msg.sender].registered == true, "User is already registered");
         _;
     }
 
     modifier collectPayment(uint paymentType, uint isbn) {
         if (paymentType == PAYMENT_TYPE_TOPUP) {
-            require(msg.value >= 0);
+            require(msg.value >= 0, "You should send more than 0 ETH");
             usersList[msg.sender].balance.add(msg.value);
         } else {
-            require(msg.value >= booksDetails[isbn].rentalPricePerDay);
+            require(msg.value >= booksDetails[isbn].rentalPricePerDay, "The provided amount does not cover the book rental price");
         }
 
         _;
@@ -135,8 +135,16 @@ contract LibraryManagament is Destructible {
     }
 
     /*
+     * @dev - book renting function
+     * @param isbn - the isbn of the book
+     */
+    function rentBook(uint isbn) public isUserRegistered isBookActive(isbn) isBookAvailable(isbn) collectPayment() {
+
+    }
+
+    /*
      * @dev - Get price of a book
-     * @param isbn
+     * @param isbn - the isbn of the book
      */
     function getBookPrice(uint isbn) public pure returns (uint) {
         return bookDetails[isbn].price;
